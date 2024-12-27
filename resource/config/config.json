@@ -1,0 +1,9 @@
+{
+  "scratchdir": "/home/varashebkanthi/backend/FileConfigAPI/scratchdir",
+  "pgdb": {
+    "pgurl": "postgresql://testing_owner:rilHO3obSc7X@ep-weathered-credit-a1p4w5k1.ap-southeast-1.aws.neon.tech/Dmt?sslmode=require"
+  },
+  "apiserver": {
+    "port": 8080
+  }
+}
