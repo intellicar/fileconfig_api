@@ -14,7 +14,9 @@ import (
 	"github.com/fabrikiot/goutils/fabpgsql"
 	"github.com/natefinch/lumberjack"
 	"github.com/varasheb/fileconfig_api.git/config"
+	filetrchdlr "github.com/varasheb/fileconfig_api.git/handlers/filetrackerhdlr"
 	"github.com/varasheb/fileconfig_api.git/handlers/releasefilehdlr"
+	"github.com/varasheb/fileconfig_api.git/services/filetrcsvc"
 	"github.com/varasheb/fileconfig_api.git/services/releaseconfigsvc"
 )
 
@@ -82,13 +84,17 @@ func main() {
 	newfilesvcI := releaseconfigsvc.NewfileConfigSvc(pgsqlI, serviceLoggerI)
 	newfilesvcI.Start()
 
+	filetrcsvcI := filetrcsvc.NewfileTrcSvc(pgsqlI, serviceLoggerI)
+	filetrcsvcI.Start()
+
 	// 2. Handlers..
 	handlerLoggerI := log.New(os.Stdout, "HANDLER:", log.Lmicroseconds|log.LstdFlags|log.Llongfile)
 	addLoggerFile(logDirPath, "handlers.log", handlerLoggerI)
 
 	releasefilehdlrI := releasefilehdlr.NewReleaseFileHdlr(newfilesvcI, handlerLoggerI)
+	filetrackerhdlrI := filetrchdlr.NewReleaseFileHdlr(filetrcsvcI, handlerLoggerI)
 
-	// 3. Start the server..
+	// 3. Start the server...
 	activeThreads := &sync.WaitGroup{}
 	apiservercallback := apiserver.ApiServerStateCallback{
 		Started: func() {
@@ -105,7 +111,7 @@ func main() {
 	addLoggerFile(logDirPath, "access.log", accessLoggerI)
 	handlerMap := apiserver.NewApiServerHandlerMap(accessLoggerI)
 	handlerMap.AddHandler("/api/v1/releaseconfigs", releasefilehdlrI)
-
+	handlerMap.AddHandler("/api/v1/filetracker", filetrackerhdlrI)
 	apiserver := apiserver.NewApiServer(listenaddr, handlerMap.ToRouter(), accessLoggerI, apiservercallback)
 	activeThreads.Add(1)
 	starterr := apiserver.Start()

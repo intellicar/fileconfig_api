@@ -12,7 +12,14 @@ import (
 	"github.com/varasheb/fileconfig_api.git/common/apperr/utils"
 )
 
+var cachelist []*ReleasedFile
+
 func (o *ReleaseFileConfigSvc) listmyfiles() ([]*ReleasedFile, *faberr.FabErr) {
+
+	if len(cachelist) > 0 {
+		return cachelist, nil
+	}
+
 	dbI, getdberr := o.pgsqlI.GetDBInstance()
 	if getdberr != nil {
 		return nil, apperr.ErrDBGetConn
@@ -41,6 +48,9 @@ func (o *ReleaseFileConfigSvc) listmyfiles() ([]*ReleasedFile, *faberr.FabErr) {
 		}
 		filelist = append(filelist, file)
 	}
+
+	cachelist = filelist
+
 	return filelist, nil
 }
 
@@ -92,6 +102,7 @@ func (o *ReleaseFileConfigSvc) createreleaseconfig(file *ReleasedFileReq) (*Rele
 	if err1 != nil {
 		return nil, apperr.ErrDBInsert.NewWData(err.Error())
 	}
+	o.clearCache()
 	return releaseFile, nil
 }
 
@@ -206,6 +217,7 @@ func (o *ReleaseFileConfigSvc) updatereleaseconfig(req *ReleasedFileUpdReq) (*Re
 	if err1 != nil {
 		return nil, apperr.ErrDBInsert.NewWData(err.Error())
 	}
+	o.clearCache()
 	return releaseFile, nil
 }
 
@@ -252,6 +264,12 @@ func (o *ReleaseFileConfigSvc) deletereleaseconfig(filename string, updatedby st
 	if err1 != nil {
 		return nil, apperr.ErrDBInsert.NewWData(err.Error())
 	}
+	o.clearCache()
+
 	return releaseFile, nil
 
+}
+
+func (o *ReleaseFileConfigSvc) clearCache() {
+	cachelist = []*ReleasedFile{}
 }
