@@ -35,3 +35,11 @@ func (o *FileTrcSvc) Start() {
 func (o *FileTrcSvc) Listmyfiles() ([]*FileTrc, *faberr.FabErr) {
 	return o.listmyfiles()
 }
+
+func (o *FileTrcSvc) GetByFilename(FileName string) (*FileTrc, *faberr.FabErr) {
+	return o.getbyfilename(FileName)
+}
+
+func (o *FileTrcSvc) CreateConfigFiles(file *FileTrcReq) (*FileTrc, *faberr.FabErr) {
+	return o.createconfigfiles(file)
+}

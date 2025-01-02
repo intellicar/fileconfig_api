@@ -21,4 +21,7 @@ func NewReleaseFileHdlr(fileTrcSvcI *filetrcsvc.FileTrcSvc, logger *log.Logger) 
 
 func (o *FileTrcHdlr) RegisterRoutes(router chi.Router) {
 	router.Get("/", o.listmyfiles)
+	router.Post("/getbyfilename", o.getbyfilename)
+	router.Post("/", o.createconfigfiles)
+
 }

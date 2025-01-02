@@ -15,7 +15,6 @@ import (
 var cachelist []*ReleasedFile
 
 func (o *ReleaseFileConfigSvc) listmyfiles() ([]*ReleasedFile, *faberr.FabErr) {
-
 	if len(cachelist) > 0 {
 		return cachelist, nil
 	}
@@ -103,6 +102,7 @@ func (o *ReleaseFileConfigSvc) createreleaseconfig(file *ReleasedFileReq) (*Rele
 		return nil, apperr.ErrDBInsert.NewWData(err.Error())
 	}
 	o.clearCache()
+
 	return releaseFile, nil
 }
 
@@ -218,6 +218,7 @@ func (o *ReleaseFileConfigSvc) updatereleaseconfig(req *ReleasedFileUpdReq) (*Re
 		return nil, apperr.ErrDBInsert.NewWData(err.Error())
 	}
 	o.clearCache()
+
 	return releaseFile, nil
 }
 
